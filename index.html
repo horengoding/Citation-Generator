@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Daftar Pustaka</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="wrap">
+        <header class="masthead">
+            <p class="eyebrow">Katalog referensi</p>
+            <h1>Generator Daftar Pustaka</h1>
+            <p class="sub">Susun rujukan gaya APA dari isian manual, tautan DOI, atau berkas PDF yang kamu seret ke sini.</p>
+        </header>
+
+        <div class="layout">
+            <section class="drawer" aria-label="Formulir input">
+                <div class="tabs" role="tablist">
+                    <button type="button" class="tab active" data-tab="manual" role="tab" aria-selected="true">Manual</button>
+                    <button type="button" class="tab" data-tab="doi" role="tab" aria-selected="false">Cari DOI</button>
+                    <button type="button" class="tab" data-tab="upload" role="tab" aria-selected="false">Unggah PDF</button>
+                </div>
+
+                <div class="tab-panel" id="panel-doi" hidden>
+                    <div class="form-group">
+                        <label for="doiInput">Nomor DOI atau tautan</label>
+                        <input type="text" id="doiInput" placeholder="Contoh: 10.1000/xyz123 atau https://doi.org/10.1000/xyz123">
+                    </div>
+                    <button type="button" class="btn-secondary" id="doiSearchBtn">Cari & isi otomatis</button>
+                    <p class="hint" id="doiStatus">Hasil pencarian akan mengisi formulir manual di sebelah kiri untuk kamu periksa sebelum disimpan.</p>
+                </div>
+
+                <div class="tab-panel" id="panel-upload" hidden>
+                    <div class="dropzone" id="dropzone" tabindex="0">
+                        <p class="drop-title">Seret berkas PDF ke sini</p>
+                        <p class="drop-sub">atau klik untuk memilih berkas — DOI di dalamnya akan dicari otomatis</p>
+                        <input type="file" id="fileInput" accept="application/pdf" hidden>
+                    </div>
+                    <p class="hint" id="uploadStatus">Mendukung PDF artikel atau bab buku yang mencantumkan nomor DOI.</p>
+                </div>
+
+                <div class="tab-panel" id="panel-manual">
+                    <form id="citationForm">
+                        <div class="form-group">
+                            <label for="sourceType">Tipe sumber pustaka</label>
+                            <select id="sourceType">
+                                <option value="buku">Buku</option>
+                                <option value="jurnal">Jurnal ilmiah</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="author">Nama penulis</label>
+                            <input type="text" id="author" required placeholder="Sugiyono, atau Smith, J.">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="year">Tahun terbit</label>
+                            <input type="number" id="year" required placeholder="2023">
+                        </div>
+
+                        <div class="form-group">
+                            <label id="titleLabel" for="title">Judul buku</label>
+                            <input type="text" id="title" required placeholder="Metode Penelitian Kuantitatif">
+                        </div>
+
+                        <div id="journalFields" style="display: none;">
+                            <div class="form-group">
+                                <label for="journalName">Nama jurnal</label>
+                                <input type="text" id="journalName" placeholder="Jurnal Teknologi Informasi">
+                            </div>
+                            <div class="form-group">
+                                <label for="volume">Volume & nomor isu</label>
+                                <input type="text" id="volume" placeholder="5(2)">
+                            </div>
+                            <div class="form-group">
+                                <label for="pages">Halaman</label>
+                                <input type="text" id="pages" placeholder="120-135">
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="publisherField">
+                            <label for="publisher">Penerbit</label>
+                            <input type="text" id="publisher" required placeholder="Alfabeta">
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="btn-primary">Tambahkan ke daftar</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="catalog" aria-label="Daftar pustaka tersimpan">
+                <div class="catalog-head">
+                    <h2>Daftar Pustaka</h2>
+                    <span class="count" id="citationCount">0 entri</span>
+                </div>
+                <ul id="citationList"></ul>
+                <p class="empty-state" id="emptyState">Belum ada rujukan tersimpan. Tambahkan lewat panel di sebelah kiri.</p>
+                <button type="button" id="clearAllBtn" class="btn-danger">Hapus semua daftar pustaka</button>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
