@@ -10,6 +10,24 @@
     --navy-soft: #E1E9EC;
     --danger: #8A3B32;
     --danger-soft: #F3E3DF;
+
+    color-scheme: light;
+}
+
+html[data-theme="dark"] {
+    --paper: #1B1912;
+    --card: #242019;
+    --ink: #ECE5D3;
+    --ink-soft: #B3A990;
+    --line: #3C3626;
+    --green: #7CB187;
+    --green-soft: #263429;
+    --navy: #8FB6D1;
+    --navy-soft: #202E38;
+    --danger: #DE968A;
+    --danger-soft: #3A2620;
+
+    color-scheme: dark;
 }
 
 * {
@@ -25,6 +43,7 @@ body {
     background-size: 100% 42px;
     color: var(--ink);
     padding: 48px 20px 80px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .wrap {
@@ -32,12 +51,22 @@ body {
     margin: 0 auto;
 }
 
+/* ---------- Masthead ---------- */
 
 .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
     text-align: left;
     border-bottom: 2px solid var(--ink);
     padding-bottom: 20px;
     margin-bottom: 36px;
+    transition: border-color 0.3s ease;
+}
+
+.masthead-text {
+    flex: 1;
 }
 
 .eyebrow {
@@ -46,6 +75,7 @@ body {
     font-size: 12px;
     letter-spacing: 0.06em;
     color: var(--green);
+    transition: color 0.3s ease;
 }
 
 .masthead h1 {
@@ -61,8 +91,33 @@ body {
     color: var(--ink-soft);
     font-size: 16px;
     line-height: 1.5;
+    transition: color 0.3s ease;
 }
 
+.theme-toggle {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+    line-height: 1;
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+        transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--green);
+    transform: rotate(-8deg);
+}
+
+/* ---------- Layout ---------- */
 
 .layout {
     display: grid;
@@ -77,10 +132,12 @@ body {
     }
 }
 
+/* ---------- Drawer / tabs ---------- */
 
 .drawer {
     background: var(--card);
     border: 1px solid var(--line);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .tabs {
@@ -99,6 +156,8 @@ body {
     border-bottom: 1px solid var(--line);
     border-right: 1px solid var(--line);
     cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease,
+        border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .tab:last-child {
@@ -115,8 +174,21 @@ body {
 
 .tab-panel {
     padding: 22px 22px 24px;
+    animation: panelIn 0.28s ease;
 }
 
+@keyframes panelIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- Form ---------- */
 
 .form-group {
     margin-bottom: 18px;
@@ -127,6 +199,7 @@ label {
     margin-bottom: 6px;
     font-size: 13px;
     color: var(--ink-soft);
+    transition: color 0.3s ease;
 }
 
 input,
@@ -141,6 +214,7 @@ select {
     border-bottom: 1px solid var(--line);
     border-radius: 0;
     outline: none;
+    transition: border-color 0.2s ease, color 0.3s ease;
 }
 
 select {
@@ -157,13 +231,19 @@ input::placeholder {
     color: #B7AF98;
 }
 
+html[data-theme="dark"] input::placeholder {
+    color: #6E6650;
+}
+
 .hint {
     font-size: 13px;
     color: var(--ink-soft);
     line-height: 1.5;
     margin-top: 12px;
+    transition: color 0.3s ease;
 }
 
+/* ---------- Buttons ---------- */
 
 .btn-primary,
 .btn-secondary,
@@ -176,16 +256,30 @@ input::placeholder {
     border: 1px solid transparent;
     border-radius: 2px;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-danger:active,
+.btn-copy:active {
+    transform: scale(0.97);
 }
 
 .btn-primary {
     margin-top: 6px;
     background: var(--green);
-    color: #fff;
+    color: #10160F;
+}
+
+html[data-theme="dark"] .btn-primary {
+    color: #10160F;
 }
 
 .btn-primary:hover {
-    background: #26432B;
+    filter: brightness(0.92);
+    transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -196,7 +290,8 @@ input::placeholder {
 
 .btn-secondary:hover {
     background: var(--navy);
-    color: #fff;
+    color: var(--paper);
+    transform: translateY(-1px);
 }
 
 .btn-danger {
@@ -219,6 +314,8 @@ input::placeholder {
     border: 1px solid var(--line);
     border-radius: 2px;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .btn-copy:hover {
@@ -229,8 +326,22 @@ input::placeholder {
 .btn-copy.copied {
     color: var(--green);
     border-color: var(--green);
+    animation: pop 0.25s ease;
 }
 
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.12);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ---------- Dropzone ---------- */
 
 .dropzone {
     border: 1.5px dashed var(--line);
@@ -238,11 +349,18 @@ input::placeholder {
     text-align: center;
     cursor: pointer;
     background: var(--paper);
+    transition: border-color 0.25s ease, background-color 0.25s ease,
+        transform 0.15s ease;
+}
+
+.dropzone:hover {
+    border-color: var(--ink-soft);
 }
 
 .dropzone.dragover {
     border-color: var(--green);
     background: var(--green-soft);
+    transform: scale(1.01);
 }
 
 .drop-title {
@@ -254,8 +372,10 @@ input::placeholder {
     margin: 0;
     font-size: 13px;
     color: var(--ink-soft);
+    transition: color 0.3s ease;
 }
 
+/* ---------- Catalog ---------- */
 
 .catalog-head {
     display: flex;
@@ -264,6 +384,7 @@ input::placeholder {
     border-bottom: 2px solid var(--ink);
     padding-bottom: 8px;
     margin-bottom: 16px;
+    transition: border-color 0.3s ease;
 }
 
 .catalog-head h2 {
@@ -276,6 +397,7 @@ input::placeholder {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     color: var(--ink-soft);
+    transition: color 0.3s ease;
 }
 
 #citationList {
@@ -291,6 +413,28 @@ input::placeholder {
     border-left: 3px solid var(--green);
     padding: 16px 16px 14px 20px;
     margin-bottom: 14px;
+    animation: cardIn 0.35s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+        box-shadow 0.2s ease;
+}
+
+.citation-card:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="dark"] .citation-card:hover {
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .citation-card.jurnal {
@@ -312,6 +456,7 @@ input::placeholder {
     color: var(--green);
     background: var(--green-soft);
     padding: 2px 7px;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .citation-card.jurnal .tag {
@@ -325,6 +470,7 @@ input::placeholder {
     line-height: 1.7;
     color: var(--ink);
     margin: 0 0 10px;
+    transition: color 0.3s ease;
 }
 
 .empty-state {
@@ -334,4 +480,5 @@ input::placeholder {
     border: 1px dashed var(--line);
     padding: 20px;
     text-align: center;
+    transition: color 0.3s ease, border-color 0.3s ease;
 }

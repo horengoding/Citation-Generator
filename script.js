@@ -30,6 +30,31 @@ if (window.pdfjsLib) {
 
 document.addEventListener('DOMContentLoaded', displayCitations);
 
+/* ---------------------------------------------------------
+   Dark mode toggle
+--------------------------------------------------------- */
+
+const themeToggle = document.getElementById('themeToggle');
+
+function applyThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+}
+
+themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    applyThemeIcon();
+});
+
+applyThemeIcon();
+
+/* ---------------------------------------------------------
+   Tabs
+--------------------------------------------------------- */
+
 function switchTab(name) {
     tabs.forEach(t => {
         const active = t.dataset.tab === name;
@@ -44,6 +69,10 @@ function switchTab(name) {
 tabs.forEach(tab => {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
 });
+
+/* ---------------------------------------------------------
+   Manual form: source type toggle
+--------------------------------------------------------- */
 
 sourceType.addEventListener('change', function () {
     if (sourceType.value === 'jurnal') {
@@ -61,6 +90,10 @@ sourceType.addEventListener('change', function () {
     }
 });
 
+/* ---------------------------------------------------------
+   Manual form: submit
+--------------------------------------------------------- */
+
 citationForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -68,7 +101,11 @@ citationForm.addEventListener('submit', function (e) {
     const author = document.getElementById('author').value.trim();
     const year = document.getElementById('year').value.trim();
     const title = document.getElementById('title').value.trim();
+    const doi = document.getElementById('doi').value.trim();
 
+    // If the author field already looks like "Family, I." (e.g. filled in
+    // automatically from a DOI lookup, or typed that way on purpose), keep
+    // it as-is instead of re-splitting it by spaces.
     let formattedAuthor = author;
     if (!author.includes(',')) {
         const nameParts = author.split(' ').filter(Boolean);
@@ -80,6 +117,7 @@ citationForm.addEventListener('submit', function (e) {
     }
 
     let newCitation = { type, author: formattedAuthor, year, title };
+    if (doi) newCitation.doi = doi;
 
     if (type === 'buku') {
         newCitation.publisher = document.getElementById('publisher').value.trim();
@@ -98,24 +136,51 @@ citationForm.addEventListener('submit', function (e) {
     titleLabel.innerText = 'Judul buku';
 });
 
+/* ---------------------------------------------------------
+   Storage + rendering
+--------------------------------------------------------- */
+
 function saveToLocalStorage(citation) {
     let citations = localStorage.getItem('citations') ? JSON.parse(localStorage.getItem('citations')) : [];
     citations.push(citation);
     localStorage.setItem('citations', JSON.stringify(citations));
 }
 
+function doiUrl(item) {
+    if (!item.doi) return '';
+    return item.doi.startsWith('http') ? item.doi : `https://doi.org/${item.doi}`;
+}
+
 function citationHTML(item) {
+    let html;
     if (item.type === 'buku') {
-        return `${item.author} (${item.year}). <em>${item.title}</em>. ${item.publisher}.`;
+        html = `${item.author} (${item.year}). <em>${item.title}</em>`;
+        html += item.publisher ? `. ${item.publisher}.` : '.';
+    } else {
+        html = `${item.author} (${item.year}). ${item.title}. <em>${item.journalName}</em>`;
+        const details = [item.volume, item.pages].filter(Boolean);
+        if (details.length) html += `, ${details.join(', ')}`;
+        html += '.';
     }
-    return `${item.author} (${item.year}). ${item.title}. <em>${item.journalName}</em>, ${item.volume}, ${item.pages}.`;
+    const url = doiUrl(item);
+    if (url) html += ` <a href="${url}" target="_blank" rel="noopener">${url}</a>`;
+    return html;
 }
 
 function citationPlainText(item) {
+    let text;
     if (item.type === 'buku') {
-        return `${item.author} (${item.year}). ${item.title}. ${item.publisher}.`;
+        text = `${item.author} (${item.year}). ${item.title}`;
+        text += item.publisher ? `. ${item.publisher}.` : '.';
+    } else {
+        text = `${item.author} (${item.year}). ${item.title}. ${item.journalName}`;
+        const details = [item.volume, item.pages].filter(Boolean);
+        if (details.length) text += `, ${details.join(', ')}`;
+        text += '.';
     }
-    return `${item.author} (${item.year}). ${item.title}. ${item.journalName}, ${item.volume}, ${item.pages}.`;
+    const url = doiUrl(item);
+    if (url) text += ` ${url}`;
+    return text;
 }
 
 function displayCitations() {
@@ -171,6 +236,11 @@ clearAllBtn.addEventListener('click', function () {
     }
 });
 
+/* ---------------------------------------------------------
+   Fill the manual form from a lookup result, then hand
+   control back to the person for review before saving.
+--------------------------------------------------------- */
+
 function fillManualForm(data) {
     sourceType.value = data.type === 'jurnal' ? 'jurnal' : 'buku';
     sourceType.dispatchEvent(new Event('change'));
@@ -178,6 +248,7 @@ function fillManualForm(data) {
     document.getElementById('author').value = data.author || '';
     document.getElementById('year').value = data.year || '';
     document.getElementById('title').value = data.title || '';
+    document.getElementById('doi').value = data.doi || '';
 
     if (data.type === 'jurnal') {
         document.getElementById('journalName').value = data.journalName || '';
@@ -189,6 +260,10 @@ function fillManualForm(data) {
 
     switchTab('manual');
 }
+
+/* ---------------------------------------------------------
+   DOI lookup via CrossRef
+--------------------------------------------------------- */
 
 function cleanDoi(raw) {
     return raw
@@ -244,7 +319,8 @@ async function lookupDOI(rawDoi) {
             publisher: msg.publisher || '',
             journalName: (msg['container-title'] && msg['container-title'][0]) || '',
             volume: msg.issue ? `${msg.volume || ''}(${msg.issue})` : (msg.volume || ''),
-            pages: msg.page || ''
+            pages: msg.page || '',
+            doi: doi
         };
 
         fillManualForm(data);
@@ -263,6 +339,11 @@ doiInput.addEventListener('keydown', e => {
         lookupDOI(doiInput.value);
     }
 });
+
+/* ---------------------------------------------------------
+   Drag-and-drop PDF: extract a DOI from the text, then
+   reuse the same CrossRef lookup.
+--------------------------------------------------------- */
 
 const DOI_REGEX = /10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i;
 
