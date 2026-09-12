@@ -37,7 +37,6 @@ def init_db():
         )
         """
     )
-    # Migrate older databases created before the doi column existed.
     existing_cols = [row["name"] for row in conn.execute("PRAGMA table_info(citations)")]
     if "doi" not in existing_cols:
         conn.execute("ALTER TABLE citations ADD COLUMN doi TEXT")

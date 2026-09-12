@@ -51,7 +51,6 @@ body {
     margin: 0 auto;
 }
 
-/* ---------- Masthead ---------- */
 
 .masthead {
     display: flex;
@@ -117,7 +116,6 @@ body {
     transform: rotate(-8deg);
 }
 
-/* ---------- Layout ---------- */
 
 .layout {
     display: grid;
@@ -132,7 +130,6 @@ body {
     }
 }
 
-/* ---------- Drawer / tabs ---------- */
 
 .drawer {
     background: var(--card);
@@ -188,7 +185,6 @@ body {
     }
 }
 
-/* ---------- Form ---------- */
 
 .form-group {
     margin-bottom: 18px;
@@ -243,7 +239,6 @@ html[data-theme="dark"] input::placeholder {
     transition: color 0.3s ease;
 }
 
-/* ---------- Buttons ---------- */
 
 .btn-primary,
 .btn-secondary,
@@ -341,7 +336,6 @@ html[data-theme="dark"] .btn-primary {
     }
 }
 
-/* ---------- Dropzone ---------- */
 
 .dropzone {
     border: 1.5px dashed var(--line);
@@ -375,7 +369,6 @@ html[data-theme="dark"] .btn-primary {
     transition: color 0.3s ease;
 }
 
-/* ---------- Catalog ---------- */
 
 .catalog-head {
     display: flex;

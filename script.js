@@ -30,10 +30,6 @@ if (window.pdfjsLib) {
 
 document.addEventListener('DOMContentLoaded', displayCitations);
 
-/* ---------------------------------------------------------
-   Dark mode toggle
---------------------------------------------------------- */
-
 const themeToggle = document.getElementById('themeToggle');
 
 function applyThemeIcon() {
@@ -51,10 +47,6 @@ themeToggle.addEventListener('click', () => {
 
 applyThemeIcon();
 
-/* ---------------------------------------------------------
-   Tabs
---------------------------------------------------------- */
-
 function switchTab(name) {
     tabs.forEach(t => {
         const active = t.dataset.tab === name;
@@ -69,10 +61,6 @@ function switchTab(name) {
 tabs.forEach(tab => {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
 });
-
-/* ---------------------------------------------------------
-   Manual form: source type toggle
---------------------------------------------------------- */
 
 sourceType.addEventListener('change', function () {
     if (sourceType.value === 'jurnal') {
@@ -90,10 +78,6 @@ sourceType.addEventListener('change', function () {
     }
 });
 
-/* ---------------------------------------------------------
-   Manual form: submit
---------------------------------------------------------- */
-
 citationForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -103,9 +87,6 @@ citationForm.addEventListener('submit', function (e) {
     const title = document.getElementById('title').value.trim();
     const doi = document.getElementById('doi').value.trim();
 
-    // If the author field already looks like "Family, I." (e.g. filled in
-    // automatically from a DOI lookup, or typed that way on purpose), keep
-    // it as-is instead of re-splitting it by spaces.
     let formattedAuthor = author;
     if (!author.includes(',')) {
         const nameParts = author.split(' ').filter(Boolean);
@@ -135,10 +116,6 @@ citationForm.addEventListener('submit', function (e) {
     publisherField.style.display = 'block';
     titleLabel.innerText = 'Judul buku';
 });
-
-/* ---------------------------------------------------------
-   Storage + rendering
---------------------------------------------------------- */
 
 function saveToLocalStorage(citation) {
     let citations = localStorage.getItem('citations') ? JSON.parse(localStorage.getItem('citations')) : [];
@@ -236,11 +213,6 @@ clearAllBtn.addEventListener('click', function () {
     }
 });
 
-/* ---------------------------------------------------------
-   Fill the manual form from a lookup result, then hand
-   control back to the person for review before saving.
---------------------------------------------------------- */
-
 function fillManualForm(data) {
     sourceType.value = data.type === 'jurnal' ? 'jurnal' : 'buku';
     sourceType.dispatchEvent(new Event('change'));
@@ -260,10 +232,6 @@ function fillManualForm(data) {
 
     switchTab('manual');
 }
-
-/* ---------------------------------------------------------
-   DOI lookup via CrossRef
---------------------------------------------------------- */
 
 function cleanDoi(raw) {
     return raw
@@ -339,11 +307,6 @@ doiInput.addEventListener('keydown', e => {
         lookupDOI(doiInput.value);
     }
 });
-
-/* ---------------------------------------------------------
-   Drag-and-drop PDF: extract a DOI from the text, then
-   reuse the same CrossRef lookup.
---------------------------------------------------------- */
 
 const DOI_REGEX = /10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i;
 
