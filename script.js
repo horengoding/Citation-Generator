@@ -194,24 +194,34 @@ function displayCitations() {
                 }, 1500);
             };
 
-            const plain = citationPlainText(item);
-            const html = citationHTML(item);
+            const temp = document.createElement('div');
+            temp.setAttribute('contenteditable', 'true');
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            temp.style.top = '0';
+            temp.innerHTML = citationHTML(item);
+            document.body.appendChild(temp);
 
-            // Write both a plain-text and a rich-text (HTML) version so
-            // pasting into Word/Google Docs keeps the italics, while apps
-            // that only accept plain text still get a clean fallback.
-            if (navigator.clipboard && window.ClipboardItem) {
-                const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${html}</body></html>`;
-                const clipboardItem = new ClipboardItem({
-                    'text/plain': new Blob([plain], { type: 'text/plain' }),
-                    'text/html': new Blob([fullHtml], { type: 'text/html' })
-                });
-                navigator.clipboard.write([clipboardItem]).then(markCopied).catch((err) => {
-                    console.error('Gagal menulis clipboard rich text, jatuh ke teks polos:', err);
-                    navigator.clipboard.writeText(plain).then(markCopied);
-                });
+            const range = document.createRange();
+            range.selectNodeContents(temp);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            let copied = false;
+            try {
+                copied = document.execCommand('copy');
+            } catch (err) {
+                console.error('document.execCommand("copy") gagal:', err);
+            }
+
+            selection.removeAllRanges();
+            document.body.removeChild(temp);
+
+            if (copied) {
+                markCopied();
             } else {
-                navigator.clipboard.writeText(plain).then(markCopied);
+                navigator.clipboard.writeText(citationPlainText(item)).then(markCopied);
             }
         });
         top.appendChild(copyBtn);
