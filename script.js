@@ -185,15 +185,31 @@ function displayCitations() {
         copyBtn.className = 'btn-copy';
         copyBtn.textContent = 'Salin';
         copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(citationPlainText(item)).then(() => {
+            const markCopied = () => {
                 copyBtn.textContent = 'Tersalin';
                 copyBtn.classList.add('copied');
                 setTimeout(() => {
                     copyBtn.textContent = 'Salin';
                     copyBtn.classList.remove('copied');
                 }, 1500);
-            });
+            };
+
+            const plain = citationPlainText(item);
+            const html = citationHTML(item);
+
+            if (navigator.clipboard && window.ClipboardItem) {
+                const clipboardItem = new ClipboardItem({
+                    'text/plain': new Blob([plain], { type: 'text/plain' }),
+                    'text/html': new Blob([html], { type: 'text/html' })
+                });
+                navigator.clipboard.write([clipboardItem]).then(markCopied) .catch(() => {
+                    navigator.clipboard.writeText(plain).then(markCopied);
+                });
+            } else {
+                navigator.clipboard.writeText(plain).then(markCopied);
+            }
         });
+
         top.appendChild(copyBtn);
 
         const text = document.createElement('p');
