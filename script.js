@@ -1,4 +1,3 @@
-//update
 const citationForm = document.getElementById('citationForm');
 const citationList = document.getElementById('citationList');
 const sourceType = document.getElementById('sourceType');
@@ -203,14 +202,14 @@ function displayCitations() {
                     'text/plain': new Blob([plain], { type: 'text/plain' }),
                     'text/html': new Blob([html], { type: 'text/html' })
                 });
-                navigator.clipboard.write([clipboardItem]).then(markCopied) .catch(() => {
+                navigator.clipboard.write([clipboardItem]).then(markCopied).catch((err) => {
+                    console.error('Gagal menulis clipboard rich text, jatuh ke teks polos:', err);
                     navigator.clipboard.writeText(plain).then(markCopied);
                 });
             } else {
                 navigator.clipboard.writeText(plain).then(markCopied);
             }
         });
-
         top.appendChild(copyBtn);
 
         const text = document.createElement('p');
