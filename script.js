@@ -197,10 +197,14 @@ function displayCitations() {
             const plain = citationPlainText(item);
             const html = citationHTML(item);
 
+            // Write both a plain-text and a rich-text (HTML) version so
+            // pasting into Word/Google Docs keeps the italics, while apps
+            // that only accept plain text still get a clean fallback.
             if (navigator.clipboard && window.ClipboardItem) {
+                const fullHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>${html}</body></html>`;
                 const clipboardItem = new ClipboardItem({
                     'text/plain': new Blob([plain], { type: 'text/plain' }),
-                    'text/html': new Blob([html], { type: 'text/html' })
+                    'text/html': new Blob([fullHtml], { type: 'text/html' })
                 });
                 navigator.clipboard.write([clipboardItem]).then(markCopied).catch((err) => {
                     console.error('Gagal menulis clipboard rich text, jatuh ke teks polos:', err);
